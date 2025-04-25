@@ -44,57 +44,18 @@ import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Toast from "primevue/toast";
-import { useToast } from "primevue/usetoast";
 import { useAuthStore } from "../service/useAuth";
 const email = ref("");
 const password = ref("");
 const router = useRouter();
-const toast = useToast();
 const auth = useAuthStore();
 const handleLogin = async () => {
-  try {
-    const response = await fetch(
-      "http://localhost:8080/hostel_management_system_web/api/auth/login",
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email.value,
-          passwords: password.value,
-        }),
-      }
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      const { user } = data;
-      console.log(user.roleId);
-
-      auth.login(user);
-      if (user.roleId === 1) {
-        router.push("/student");
-      } else if (user.roleId === 2) {
-        router.push("/");
-      }
-    } else {
-      const errorData = await response.json();
-      toast.add({
-        severity: "error",
-        summary: "Failed",
-        detail: errorData.error,
-        life: 3000,
-      });
-    }
-  } catch (error) {
-    toast.add({
-      severity: "error",
-      summary: "Login Failed",
-      detail: "Login Failed",
-      life: 3000,
-    });
+  const ok = await auth.loginAction({
+    email: email.value,
+    password: password.value,
+  });
+  if (ok) {
+    router.push(auth.user.role.id === 1 ? "/student" : "/");
   }
 };
 </script>

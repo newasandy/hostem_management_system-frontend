@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive } from "vue";
-import { InputText, Button, Dialog } from "primevue";
+import { ref, onMounted, reactive, watch } from "vue";
+import { InputText, Button, Dialog, Toast } from "primevue";
 import StudentTable from "../../components/tables/StudentTable.vue";
 import { FilterMatchMode } from "@primevue/core/api";
-import { getUserDetails } from "../../service/GetUserDetails";
+import { getUserDetails } from "../../service/UserData";
 import { roomData } from "../../service/RoomData";
 import Rooms from "../../components/tables/Rooms.vue";
 
-const { user, userData } = getUserDetails();
+const { user, userRole, userData, getUserRole, registerUser } =
+  getUserDetails();
 const { room, getAvailableRoom } = roomData();
 const loading = ref(true);
 const loading2 = ref(true);
@@ -17,7 +18,6 @@ const newUser = reactive({
   fullName: "",
   email: "",
   passwords: "",
-  roleId: 2,
   status: true,
   address: {
     country: "",
@@ -27,37 +27,16 @@ const newUser = reactive({
   },
 });
 const selectRoom = ref<any>(null);
+const selectRole = ref<{ id: number; roles: string } | null>(null);
 
+watch(selectRole, (val) => (newUser.role = val));
 async function handleSave() {
-  try {
-    const payload = {
-      ...newUser,
-      roomId: selectRoom.value ? selectRoom.value.id : null,
-    };
-
-    const response = await fetch(
-      "http://localhost:8080/hostel_management_system_web/api/auth/register",
-      {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("User registered", data);
-
-    // refresh table data
-    await userData();
-    showDialog.value = false;
-  } catch (error) {
-    console.error("Registration failed", error);
-  }
+  const payload = {
+    ...newUser,
+    room: selectRoom.value ? selectRoom.value : null,
+    role: selectRole.value ? selectRole.value : null,
+  };
+  const ok = await registerUser(payload);
 }
 
 const filters = ref({
@@ -70,6 +49,7 @@ const filters2 = ref({
 onMounted(async () => {
   await userData();
   await getAvailableRoom();
+  await getUserRole();
   loading.value = false;
   loading2.value = false;
 });
@@ -81,6 +61,7 @@ function onAction(row: any) {
 function roomAction(row: any) {
   selectRoom.value = row;
   console.log("action on row:", row);
+  console.log(newUser.role);
 }
 </script>
 
@@ -131,12 +112,15 @@ function roomAction(row: any) {
               class="w-full mb-3 p-3 h-9 border border-green-400 rounded-lg"
               placeholder="Enter Full Password"
             />
+
             <select
+              v-model="selectRole"
               class="w-full mb-3 pl-3 h-9 border border-green-400 rounded-lg"
             >
-              <option>Select an option</option>
-              <option>ADMIN</option>
-              <option>USER</option>
+              <option value="null" disabled>Select an option</option>
+              <option v-for="role in userRole" :key="role.id" :value="role">
+                {{ role.roles }}
+              </option>
             </select>
           </div>
 
@@ -203,5 +187,6 @@ function roomAction(row: any) {
       @update:filters="filters = $event"
       @action="onAction"
     />
+    <Toast />
   </div>
 </template>
