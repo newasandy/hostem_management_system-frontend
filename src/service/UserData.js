@@ -1,7 +1,6 @@
 import { ref } from "vue";
 import { useToast } from "primevue";
 import { fetchAuthentication } from "./fetchAuthentication";
-import { body } from "@primeuix/themes/aura/card";
 
 export const getUserDetails = () => {
   const users = ref([]);
@@ -69,7 +68,6 @@ export const getUserDetails = () => {
           life: 3000,
         });
 
-        await userData();
         return true;
       }
     } catch (error) {

@@ -9,8 +9,8 @@ import Rooms from "../../components/tables/Rooms.vue";
 
 const { users, totalRecords, userRole, userData, getUserRole, registerUser } =
   getUserDetails();
-const { room, getAvailableRoom } = roomData();
-const loading2 = ref(true);
+const { room, roomTotalRecords, getAvailableRoom } = roomData();
+
 const showDialog = ref(false);
 
 const newUser = reactive({
@@ -36,11 +36,8 @@ async function handleSave() {
     role: selectRole.value ? selectRole.value : null,
   };
   const ok = await registerUser(payload);
+  loadData(initialLoadEvent);
 }
-
-const filters2 = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 
 const loading = ref(false);
 const filters = ref({
@@ -90,20 +87,59 @@ async function loadData(event: LazyLoadEvent) {
   }
 }
 
+const loading2 = ref(false);
+const filters2 = ref({
+  roomNumber: { value: null, matchMode: "contains" },
+});
+const roompageSize = ref(5);
+
+const loadAvailableRoomData = async (event: LazyLoadEvent) => {
+  loading2.value = true;
+  try {
+    const filterMap = {};
+    const exactFilterMap = {};
+
+    Object.entries(event.filters || {}).forEach(([field, meta]) => {
+      if (meta?.value !== null && meta?.value !== undefined) {
+        const processedField = field.replace(/\./g, "_");
+
+        if (meta.matchMode === "equals") {
+          exactFilterMap[processedField] = meta.value;
+        } else {
+          filterMap[processedField] = meta.value.toString();
+        }
+      }
+    });
+
+    const requestBody = {
+      first: event.first || 0,
+      pageSize: event.rows || 5,
+      sortField: event.sortField || "",
+      sortOrder: event.sortOrder === 1 ? "ASC" : "DESC",
+      filters: filterMap,
+      exactFilters: exactFilterMap,
+      unAllocatedUser: true,
+    };
+
+    await getAvailableRoom(requestBody);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
 const initialLoadEvent = {
   first: 0,
   rows: pageSize.value,
   sortField: null,
   sortOrder: null,
   filters: {},
-  exactFilters: {
-    "roles.userTypes": "USER",
-  },
 };
 
 onMounted(async () => {
   loadData(initialLoadEvent);
-  await getAvailableRoom();
+  loadAvailableRoomData(initialLoadEvent);
   await getUserRole();
   loading.value = false;
   loading2.value = false;
@@ -215,10 +251,12 @@ function roomAction(row: any) {
       </form>
       <div>
         <Rooms
+          v-model:filters="filters2"
           :value="room"
-          :filters="filters2"
-          :loading="loading2"
-          @update:filters="filters2 = $event"
+          :total-records="roomTotalRecords"
+          :loading="loading"
+          :rows="pageSize"
+          @lazy="loadAvailableRoomData"
           @action="roomAction"
         />
       </div>

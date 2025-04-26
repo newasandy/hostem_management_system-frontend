@@ -2,18 +2,37 @@
   <div class="m-4 pr-8 pl-4 p-1 mb-4 rounded-lg bg-white shadow-md">
     <DataTable
       :value="value"
+      :lazy="true"
+      :paginator="true"
+      :rows="rows"
+      :totalRecords="totalRecords"
       :loading="loading"
       dataKey="id"
-      paginator
-      sortMode="multiple"
-      :rows="10"
-      filterDisplay="row"
-      :globalFilterFields="['roomNumber', 'capacity', 'status']"
       v-model:filters="internalFilters"
+      @filter="onFilter"
+      @page="onLazy"
+      @sort="onLazy"
+      filterDisplay="row"
       :rowClass="rowClass"
       tableStyle="overflow: hidden"
     >
-      <Column field="roomNumber" sortable header="Room Number" />
+      <Column
+        field="roomNumber"
+        sortable
+        header="Room Number"
+        filter
+        :showFilterMenu="false"
+      >
+        <template #filter="{ filterModel = { value: null }, filterCallback }">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            @input="filterCallback"
+            placeholder="Search names"
+            class="w-full"
+          />
+        </template>
+      </Column>
       <Column field="capacity" sortable header="Capacity" />
 
       <Column field="status" header="Status">
@@ -46,13 +65,16 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { DataTable, Column } from "primevue";
+import { DataTable, Column, InputText } from "primevue";
 import { DataTableFilterMeta } from "primevue/datatable";
+import { group } from "@primeuix/themes/aura/avatar";
 
 const props = defineProps<{
   value: any[];
   filters: DataTableFilterMeta;
   loading: boolean;
+  totalRecords: number;
+  rows: number;
 }>();
 
 const emit = defineEmits<{
@@ -60,14 +82,28 @@ const emit = defineEmits<{
   (e: "action", rowData: any): void;
 }>();
 
+function onLazy(event: LazyLoadEvent) {
+  emit("lazy", event);
+}
+
 const internalFilters = computed({
   get: () => props.filters,
-  set: (val) => emit("update:filters", val),
+  set: (val) => {
+    // Only update if values actually changed
+    if (JSON.stringify(val) !== JSON.stringify(props.filters)) {
+      emit("update:filters", val);
+    }
+  },
 });
 
+function onFilter(event: LazyLoadEvent) {
+  emit("lazy", {
+    ...event,
+    first: 0,
+  });
+}
 const rowClass = () => "group";
 
-// re-emit action event
 function handleAction(row: any) {
   emit("action", row);
 }
