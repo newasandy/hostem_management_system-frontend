@@ -4,7 +4,6 @@ import { useToast } from "primevue";
 export const useAuthStore = defineStore(
   "auth",
   () => {
-    // — STATE —
     const isLoggedIn = ref(false);
     const userRole = ref("");
     const user = ref(null);
