@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, watch } from "vue";
-import { InputText, Button, Dialog, Toast } from "primevue";
+import { Button, Dialog, Toast } from "primevue";
 import StudentTable from "../../components/tables/StudentTable.vue";
 import { FilterMatchMode } from "@primevue/core/api";
 import { getUserDetails } from "../../service/UserData";
 import { roomData } from "../../service/RoomData";
 import Rooms from "../../components/tables/Rooms.vue";
 
-const { user, userRole, userData, getUserRole, registerUser } =
+const { users, totalRecords, userRole, userData, getUserRole, registerUser } =
   getUserDetails();
 const { room, getAvailableRoom } = roomData();
-const loading = ref(true);
 const loading2 = ref(true);
 const showDialog = ref(false);
 
@@ -39,24 +38,76 @@ async function handleSave() {
   const ok = await registerUser(payload);
 }
 
-const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 const filters2 = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 
+const loading = ref(false);
+const filters = ref({
+  fullName: { value: null, matchMode: "contains" },
+  email: { value: null, matchMode: "contains" },
+  "address.country": { value: null, matchMode: "contains" },
+  "address.district": { value: null, matchMode: "contains" },
+  "address.rmcMc": { value: null, matchMode: "contains" },
+  "address.wardNo": { value: null, matchMode: "contains" },
+});
+const pageSize = ref(10);
+
+async function loadData(event: LazyLoadEvent) {
+  loading.value = true;
+
+  try {
+    const filterMap = {};
+    const exactFilterMap = { "roles.userTypes": "USER" };
+
+    Object.entries(event.filters || {}).forEach(([field, meta]) => {
+      if (meta?.value !== null && meta?.value !== undefined) {
+        const processedField = field.replace(/\./g, "_");
+
+        if (meta.matchMode === "equals") {
+          exactFilterMap[processedField] = meta.value;
+        } else {
+          filterMap[processedField] = meta.value.toString();
+        }
+      }
+    });
+
+    const requestBody = {
+      first: event.first || 0,
+      pageSize: event.rows || 10,
+      sortField: event.sortField || "",
+      sortOrder: event.sortOrder === 1 ? "ASC" : "DESC",
+      filters: filterMap,
+      exactFilters: exactFilterMap,
+      unAllocatedUser: false,
+    };
+
+    await userData(requestBody);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+const initialLoadEvent = {
+  first: 0,
+  rows: pageSize.value,
+  sortField: null,
+  sortOrder: null,
+  filters: {},
+  exactFilters: {
+    "roles.userTypes": "USER",
+  },
+};
+
 onMounted(async () => {
-  await userData();
+  loadData(initialLoadEvent);
   await getAvailableRoom();
   await getUserRole();
   loading.value = false;
   loading2.value = false;
 });
-
-function onAction(row: any) {
-  console.log("action on row:", row);
-}
 
 function roomAction(row: any) {
   selectRoom.value = row;
@@ -75,13 +126,6 @@ function roomAction(row: any) {
           label="Success"
           severity="contrast"
           @click="showDialog = true"
-        />
-      </div>
-      <div class="flex justify-end">
-        <InputText
-          v-model="filters.global.value"
-          placeholder="Keyword Search"
-          class="p-inputtext-sm"
         />
       </div>
     </div>
@@ -181,11 +225,12 @@ function roomAction(row: any) {
     </Dialog>
 
     <StudentTable
-      :value="user"
-      :filters="filters"
+      v-model:filters="filters"
+      :value="users"
+      :total-records="totalRecords"
       :loading="loading"
-      @update:filters="filters = $event"
-      @action="onAction"
+      :rows="pageSize"
+      @lazy="loadData"
     />
     <Toast />
   </div>

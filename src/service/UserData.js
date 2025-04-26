@@ -1,26 +1,30 @@
 import { ref } from "vue";
 import { useToast } from "primevue";
 import { fetchAuthentication } from "./fetchAuthentication";
+import { body } from "@primeuix/themes/aura/card";
 
 export const getUserDetails = () => {
-  const user = ref([]);
+  const users = ref([]);
   const userRole = ref([]);
+  const totalRecords = ref(0);
   const toast = useToast();
-  const userData = async () => {
+  const userData = async (payload) => {
     const response = await fetchAuthentication(
       "http://localhost:8080/hostel_management_system_web/api/user/table",
       {
-        method: "GET",
+        method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(payload),
       },
       toast
     );
     if (response.ok) {
       const data = await response.json();
-      user.value = data;
+      users.value = data.user_list;
+      totalRecords.value = data.count;
     }
   };
 
@@ -79,5 +83,5 @@ export const getUserDetails = () => {
     }
   };
 
-  return { user, userRole, userData, getUserRole, registerUser };
+  return { users, userRole, totalRecords, userData, getUserRole, registerUser };
 };
