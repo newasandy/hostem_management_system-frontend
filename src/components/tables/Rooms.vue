@@ -48,10 +48,11 @@
               {{ data.status ? "Active" : "Deactive" }}
             </span>
             <button
+              type="button"
               @click="handleAction(data)"
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 bg-blue-500 text-white p-2 rounded"
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all w-9 h-9 duration-300 bg-cyan-400 text-white p-2 rounded"
             >
-              <i class="pi pi-cog"></i>
+              <i class="pi pi-plus-circle"></i>
             </button>
           </div>
         </template>
@@ -67,7 +68,6 @@
 import { computed } from "vue";
 import { DataTable, Column, InputText } from "primevue";
 import { DataTableFilterMeta } from "primevue/datatable";
-import { group } from "@primeuix/themes/aura/avatar";
 
 const props = defineProps<{
   value: any[];

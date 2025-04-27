@@ -2,16 +2,19 @@
 import { ref, onMounted, reactive, watch } from "vue";
 import { Button, Dialog, Toast } from "primevue";
 import StudentTable from "../../components/tables/StudentTable.vue";
-import { FilterMatchMode } from "@primevue/core/api";
 import { getUserDetails } from "../../service/UserData";
 import { roomData } from "../../service/RoomData";
 import Rooms from "../../components/tables/Rooms.vue";
+import MyButton from "../../components/UI/MyButton.vue";
 
 const { users, totalRecords, userRole, userData, getUserRole, registerUser } =
   getUserDetails();
 const { room, roomTotalRecords, getAvailableRoom } = roomData();
 
 const showDialog = ref(false);
+
+const currentStep = ref(1);
+const errors = reactive({});
 
 const newUser = reactive({
   fullName: "",
@@ -25,11 +28,74 @@ const newUser = reactive({
     wardNo: null as number | null,
   },
 });
+
+const validateUserDetails = () => {
+  errors.fullName = newUser.fullName ? "" : "Full name is required";
+  errors.email = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(
+    newUser.email
+  )
+    ? ""
+    : "Invalid email address";
+  errors.password =
+    newUser.passwords.length >= 6
+      ? ""
+      : "Password must be at least 6 characters";
+  errors.role = selectRole.value ? "" : "Role is required";
+
+  return !Object.values(errors).some((error) => error);
+};
+
+const validateAddress = () => {
+  errors.country = newUser.address.country ? "" : "Country is required";
+  errors.district = newUser.address.district ? "" : "District is required";
+  errors.rmcMc = newUser.address.rmcMc ? "" : "Municipality is required";
+  errors.wardNo =
+    newUser.address.wardNo > 0 ? "" : "Valid ward number is required";
+
+  return !Object.values(errors).some((error) => error);
+};
+
+const handleNext = () => {
+  let isValid = false;
+
+  if (currentStep.value === 1) {
+    isValid = validateUserDetails();
+  } else if (currentStep.value === 2) {
+    isValid = validateAddress();
+  }
+
+  if (isValid) {
+    currentStep.value++;
+    errors.room = ""; // Reset room error when moving to next step
+  }
+};
+
 const selectRoom = ref<any>(null);
 const selectRole = ref<{ id: number; roles: string } | null>(null);
 
+const resetForm = () => {
+  currentStep.value = 1;
+  Object.assign(newUser, {
+    fullName: "",
+    email: "",
+    passwords: "",
+    address: {
+      country: "",
+      district: "",
+      rmcMc: "",
+      wardNo: null,
+    },
+  });
+  selectRole.value = null;
+  selectRoom.value = null;
+  Object.keys(errors).forEach((key) => delete errors[key]);
+};
 watch(selectRole, (val) => (newUser.role = val));
 async function handleSave() {
+  if (!selectRoom.value) {
+    errors.room = "Please select a room";
+    return;
+  }
   const payload = {
     ...newUser,
     room: selectRoom.value ? selectRoom.value : null,
@@ -91,7 +157,6 @@ const loading2 = ref(false);
 const filters2 = ref({
   roomNumber: { value: null, matchMode: "contains" },
 });
-const roompageSize = ref(5);
 
 const loadAvailableRoomData = async (event: LazyLoadEvent) => {
   loading2.value = true;
@@ -147,6 +212,7 @@ onMounted(async () => {
 
 function roomAction(row: any) {
   selectRoom.value = row;
+  errors.room = "";
   console.log("action on row:", row);
   console.log(newUser.role);
 }
@@ -158,108 +224,282 @@ function roomAction(row: any) {
       class="flex justify-between m-4 pr-8 pl-4 p-1 mb-4 rounded-lg bg-white shadow-md"
     >
       <div>
-        <Button
-          label="Success"
-          severity="contrast"
-          @click="showDialog = true"
-        />
+        <MyButton label="Add" color="contrast" @click="showDialog = true" />
       </div>
     </div>
     <Dialog
       v-model:visible="showDialog"
       modal
       header="Add New Student"
-      class="w-[90vw] md:w-[60vw] rounded-2xl shadow-lg"
+      class="w-[85vw] md:w-[35vw] rounded-2xl shadow-lg"
     >
       <form @submit.prevent="handleSave">
-        <div class="flex gap-2">
-          <div>
-            <input
-              v-model="newUser.fullName"
-              type="text"
-              class="w-full mb-3 p-3 h-9 border border-green-400 rounded-lg"
-              placeholder="Enter Full Name"
-            />
-            <input
-              v-model="newUser.email"
-              type="text"
-              class="w-full mb-3 p-3 h-9 border border-green-400 rounded-lg"
-              placeholder="Enter Full Email"
-            />
-            <input
-              v-model="newUser.passwords"
-              type="password"
-              class="w-full mb-3 p-3 h-9 border border-green-400 rounded-lg"
-              placeholder="Enter Full Password"
-            />
+        <div v-if="currentStep === 1" class="flex gap-2">
+          <div class="w-full">
+            <div>
+              <div class="mb-1">
+                <label
+                  for="fullName"
+                  class="block text-base font-medium text-gray-700 font-medium"
+                >
+                  Full Name:
+                </label>
+              </div>
+              <div class="mb-3">
+                <input
+                  id="fullName"
+                  v-model.trim="newUser.fullName"
+                  type="text"
+                  class="w-full p-3 h-9 border rounded-lg"
+                  :class="
+                    errors.fullName ? 'border-red-500' : 'border-green-400'
+                  "
+                  placeholder="Enter Full Name"
+                />
+                <span v-if="errors.fullName" class="text-red-500 text-sm">{{
+                  errors.fullName
+                }}</span>
+              </div>
+            </div>
 
-            <select
-              v-model="selectRole"
-              class="w-full mb-3 pl-3 h-9 border border-green-400 rounded-lg"
-            >
-              <option value="null" disabled>Select an option</option>
-              <option v-for="role in userRole" :key="role.id" :value="role">
-                {{ role.roles }}
-              </option>
-            </select>
-          </div>
+            <div>
+              <div class="mb-1">
+                <label
+                  for="email"
+                  class="block text-base font-medium text-gray-700 font-medium"
+                >
+                  Email:
+                </label>
+              </div>
+              <div class="mb-3">
+                <input
+                  id="email"
+                  v-model.trim="newUser.email"
+                  type="email"
+                  class="w-full p-3 h-9 border rounded-lg"
+                  :class="errors.email ? 'border-red-500' : 'border-green-400'"
+                  placeholder="Enter Email"
+                />
+                <span v-if="errors.email" class="text-red-500 text-sm">{{
+                  errors.email
+                }}</span>
+              </div>
+            </div>
 
-          <div>
-            <input
-              v-model="newUser.address.country"
-              type="text"
-              class="w-full mb-3 p-3 h-9 border border-green-400 rounded-lg"
-              placeholder="Enter Country"
-            />
-            <input
-              v-model="newUser.address.district"
-              type="text"
-              class="w-full mb-3 p-3 h-9 border border-green-400 rounded-lg"
-              placeholder="Enter District"
-            />
-            <input
-              v-model="newUser.address.rmcMc"
-              type="text"
-              class="w-full mb-3 p-3 h-9 border border-green-400 rounded-lg"
-              placeholder="Enter Municipality"
-            />
-            <input
-              v-model="newUser.address.wardNo"
-              type="number"
-              min="1"
-              class="w-full mb-3 p-3 h-9 border border-green-400 rounded-lg"
-              placeholder="Enter Ward Number"
-            />
+            <div>
+              <div class="mb-1">
+                <label
+                  for="password"
+                  class="block text-base font-medium text-gray-700 font-medium"
+                >
+                  Password:
+                </label>
+              </div>
+              <div class="mb-3">
+                <input
+                  id="password"
+                  v-model.trim="newUser.passwords"
+                  type="password"
+                  class="w-full p-3 h-9 border rounded-lg"
+                  :class="
+                    errors.password ? 'border-red-500' : 'border-green-400'
+                  "
+                  placeholder="Enter Password"
+                />
+                <span v-if="errors.password" class="text-red-500 text-sm">{{
+                  errors.password
+                }}</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="mb-1">
+                <label
+                  for="role"
+                  class="block text-base font-medium text-gray-700 font-medium"
+                >
+                  User Role:
+                </label>
+              </div>
+              <div class="mb-3">
+                <select
+                  id="role"
+                  v-model="selectRole"
+                  class="w-full pl-3 h-9 border rounded-lg"
+                  :class="errors.role ? 'border-red-500' : 'border-green-400'"
+                >
+                  <option value="null" disabled>Select Role</option>
+                  <option v-for="role in userRole" :key="role.id" :value="role">
+                    {{ role.roles }}
+                  </option>
+                </select>
+                <span v-if="errors.role" class="text-red-500 text-sm">{{
+                  errors.role
+                }}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="flex justify-end gap-3">
-          <Button
-            type="submit"
-            label="Save"
-            @click="showDialog = false"
-            severity="contrast"
-            class="mt-4 w-20"
-          />
-          <Button
-            label="Close"
-            @click="showDialog = false"
-            severity="secondary"
-            class="mt-4 w-20"
-          />
+        <!-- Step 2: Address Details -->
+        <div v-if="currentStep === 2" class="flex gap-2">
+          <div class="w-full">
+            <div>
+              <div class="mb-1">
+                <label
+                  for="country"
+                  class="block text-base font-medium text-gray-700 font-medium"
+                >
+                  Country:
+                </label>
+              </div>
+              <div class="mb-3">
+                <input
+                  id="country"
+                  v-model.trim="newUser.address.country"
+                  type="text"
+                  class="w-full p-3 h-9 border rounded-lg"
+                  :class="
+                    errors.country ? 'border-red-500' : 'border-green-400'
+                  "
+                  placeholder="Enter Country"
+                />
+                <span v-if="errors.country" class="text-red-500 text-sm">{{
+                  errors.country
+                }}</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="mb-1">
+                <label
+                  for="district"
+                  class="block text-base font-medium text-gray-700 font-medium"
+                >
+                  District:
+                </label>
+              </div>
+              <div class="mb-3">
+                <input
+                  v-model.trim="newUser.address.district"
+                  type="text"
+                  class="w-full p-3 h-9 border rounded-lg"
+                  :class="
+                    errors.district ? 'border-red-500' : 'border-green-400'
+                  "
+                  placeholder="Enter District"
+                />
+                <span v-if="errors.district" class="text-red-500 text-sm">{{
+                  errors.district
+                }}</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="mb-1">
+                <label
+                  for="rmcMc"
+                  class="block text-base font-medium text-gray-700 font-medium"
+                >
+                  Metro:
+                </label>
+              </div>
+              <div class="mb-3">
+                <input
+                  v-model.trim="newUser.address.rmcMc"
+                  type="text"
+                  class="w-full p-3 h-9 border rounded-lg"
+                  :class="errors.rmcMc ? 'border-red-500' : 'border-green-400'"
+                  placeholder="Enter Municipality"
+                />
+                <span v-if="errors.rmcMc" class="text-red-500 text-sm">{{
+                  errors.rmcMc
+                }}</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="mb-1">
+                <label
+                  for="role"
+                  class="block text-base font-medium text-gray-700 font-medium"
+                >
+                  Ward Number:
+                </label>
+              </div>
+              <div class="mb-3">
+                <input
+                  v-model.number="newUser.address.wardNo"
+                  type="number"
+                  min="1"
+                  class="w-full p-3 h-9 border rounded-lg"
+                  :class="errors.wardNo ? 'border-red-500' : 'border-green-400'"
+                  placeholder="Enter Ward Number"
+                />
+                <span v-if="errors.wardNo" class="text-red-500 text-sm">{{
+                  errors.wardNo
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Room Selection -->
+        <div v-if="currentStep === 3">
+          <div class="mb-3">
+            <Rooms
+              v-model:filters="filters2"
+              :value="room"
+              :total-records="roomTotalRecords"
+              :loading="loading"
+              :rows="pageSize"
+              @lazy="loadAvailableRoomData"
+              @action="roomAction"
+            />
+            <span v-if="errors.room" class="text-red-500 text-sm">{{
+              errors.room
+            }}</span>
+          </div>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="flex justify-between mt-6">
+          <div>
+            <MyButton
+              v-if="currentStep > 1"
+              label="Previous"
+              color="secondary"
+              @click="currentStep--"
+            />
+          </div>
+
+          <div class="flex gap-3">
+            <MyButton
+              v-if="currentStep < 3"
+              label="Next"
+              color="contrast"
+              @click="handleNext"
+            />
+
+            <MyButton
+              v-if="currentStep === 3"
+              type="submit"
+              label="Save"
+              color="contrast"
+              @click="showDialog == false"
+            />
+
+            <MyButton
+              label="Close"
+              @click="
+                showDialog = false;
+                resetForm();
+              "
+              color="secondary"
+            />
+          </div>
         </div>
       </form>
-      <div>
-        <Rooms
-          v-model:filters="filters2"
-          :value="room"
-          :total-records="roomTotalRecords"
-          :loading="loading"
-          :rows="pageSize"
-          @lazy="loadAvailableRoomData"
-          @action="roomAction"
-        />
-      </div>
     </Dialog>
 
     <StudentTable
