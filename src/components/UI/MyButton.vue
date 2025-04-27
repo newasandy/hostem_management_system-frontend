@@ -25,6 +25,7 @@ const props = defineProps({
         "warning",
         "help",
         "danger",
+        "contrast",
       ].includes(value),
   },
   type: {

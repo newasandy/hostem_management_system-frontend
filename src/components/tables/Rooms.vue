@@ -1,5 +1,5 @@
 <template>
-  <div class="m-4 pr-8 pl-4 p-1 mb-4 rounded-lg bg-white shadow-md">
+  <div class="m-4 pt-4 pb-4 mb-4 rounded-lg bg-white shadow-md">
     <DataTable
       :value="value"
       :lazy="true"
@@ -80,6 +80,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "update:filters", val: DataTableFilterMeta): void;
   (e: "action", rowData: any): void;
+  (e: "lazy"): void;
 }>();
 
 function onLazy(event: LazyLoadEvent) {
