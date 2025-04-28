@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { Button, DataTable, Column, InputText } from "primevue";
+import { DataTable, Column, InputText } from "primevue";
 import { DataTableFilterMeta } from "primevue/datatable";
 import TableRowButton from "../UI/TableRowButton.vue";
 

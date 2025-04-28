@@ -14,6 +14,7 @@
       @sort="onLazy"
       filterDisplay="row"
       :rowClass="getRowClass"
+      tableStyle="overflow: hidden"
       :rowsPerPageOptions="[5, 10, 20]"
       currentPageReportTemplate="{first} to {last} of {totalRecords}"
       paginatorTemplate=" FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
@@ -102,12 +103,37 @@
             class="w-full"
           /> </template
       ></Column>
-      <Column field="address.wardNo" header="Ward No" sortable filter />
+      <Column field="address.wardNo" header="Ward No" sortable filter>
+        <template #body="{ data }">
+          <div class="relative overflow-visible group">
+            <span>
+              {{ data.address.wardNo }}
+            </span>
+            <TableRowButton
+              icon="pi pi-plus"
+              colorScheme="text-black bg-white"
+              @action="handleBlock(data)"
+            />
+            <TableRowButton
+              icon="pi pi-user-edit"
+              position="right-11"
+              colorScheme="text-black bg-white"
+              @action="handleEdit(data)"
+            />
+          </div>
+        </template>
+      </Column>
 
       <!-- <Column field="status" header="Status">
         <template #body="{ data }">
-          <span :class="data.status ? 'text-green-600' : 'text-red-600'">
-            {{ data.status ? "Active" : "Inactive" }}
+          <span
+            :class="
+              data.status
+                ? 'text-green-600 font-semibold'
+                : 'text-red-600 font-semibold'
+            "
+          >
+            {{ data.status ? "Active" : "Deactive" }}
           </span>
         </template>
       </Column> -->
@@ -122,6 +148,7 @@
 import { computed } from "vue";
 import { DataTable, Column, InputText } from "primevue";
 import type { DataTableFilterMeta, LazyLoadEvent } from "primevue/datatable";
+import TableRowButton from "../UI/TableRowButton.vue";
 
 const props = defineProps<{
   value: any[];
@@ -134,6 +161,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "update:filters", val: DataTableFilterMeta): void;
   (e: "lazy", event: LazyLoadEvent): void;
+  (e: "edit"): void;
+  (e: "block"): void;
 }>();
 
 function onLazy(event: LazyLoadEvent) {
@@ -157,7 +186,15 @@ function onFilter(event: LazyLoadEvent) {
 
 const getRowClass = (data: any) => {
   return data.status
-    ? "!bg-green-100 hover:!bg-green-200"
-    : "!bg-red-100 hover:!bg-red-200";
+    ? "!bg-green-100 hover:!bg-green-200 group"
+    : "!bg-red-100 hover:!bg-red-200 group";
 };
+
+function handleEdit(row: any) {
+  emit("edit", row);
+}
+
+function handleBlock(row: any) {
+  emit("block", row);
+}
 </script>
