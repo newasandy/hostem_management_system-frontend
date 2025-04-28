@@ -15,6 +15,9 @@
       filterDisplay="row"
       :rowClass="rowClass"
       tableStyle="overflow: hidden"
+      :rowsPerPageOptions="[5, 10, 20]"
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      paginatorTemplate=" FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
     >
       <Column
         field="roomNumber"
@@ -47,13 +50,11 @@
             >
               {{ data.status ? "Active" : "Deactive" }}
             </span>
-            <button
-              type="button"
-              @click="handleAction(data)"
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 translate-x-full opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all w-9 h-9 duration-300 bg-cyan-400 text-white p-2 rounded"
-            >
-              <i class="pi pi-plus-circle"></i>
-            </button>
+            <TableRowButton
+              icon="pi pi-plus"
+              colorScheme="text-black bg-white"
+              @action="handleAction(data)"
+            />
           </div>
         </template>
       </Column>
@@ -66,8 +67,9 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { DataTable, Column, InputText } from "primevue";
+import { Button, DataTable, Column, InputText } from "primevue";
 import { DataTableFilterMeta } from "primevue/datatable";
+import TableRowButton from "../UI/TableRowButton.vue";
 
 const props = defineProps<{
   value: any[];

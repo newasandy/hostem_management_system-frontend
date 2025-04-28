@@ -1,12 +1,12 @@
 import { ref } from "vue";
-
+import { fetchAuthentication } from "./fetchAuthentication";
 export const roomData = () => {
   const room = ref([]);
   const roomTotalRecords = ref(0);
 
   const getAvailableRoom = async (payload) => {
     try {
-      const response = await fetch(
+      const response = await fetchAuthentication(
         "http://localhost:8080/hostel_management_system_web/api/rooms/availableRoom",
         {
           method: "POST",

@@ -14,6 +14,9 @@
       @sort="onLazy"
       filterDisplay="row"
       :rowClass="getRowClass"
+      :rowsPerPageOptions="[5, 10, 20]"
+      currentPageReportTemplate="{first} to {last} of {totalRecords}"
+      paginatorTemplate=" FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"
     >
       <Column
         field="fullName"
