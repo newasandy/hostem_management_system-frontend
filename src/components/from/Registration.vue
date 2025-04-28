@@ -42,6 +42,7 @@
               type="email"
               class="w-full p-3 h-9 border rounded-lg"
               :class="errors.email ? 'border-red-500' : 'border-green-400'"
+              :disabled="!newUser.fullName"
               placeholder="Enter Email"
             />
             <span v-if="errors.email" class="text-red-500 text-sm">{{
@@ -66,6 +67,7 @@
               type="password"
               class="w-full p-3 h-9 border rounded-lg"
               :class="errors.password ? 'border-red-500' : 'border-green-400'"
+              :disabled="!newUser.email"
               placeholder="Enter Password"
             />
             <span v-if="errors.password" class="text-red-500 text-sm">{{
@@ -89,6 +91,7 @@
               v-model="selectRole"
               class="w-full pl-3 h-9 border rounded-lg"
               :class="errors.role ? 'border-red-500' : 'border-green-400'"
+              :disabled="!newUser.passwords"
             >
               <option value="null" disabled>Select Role</option>
               <option v-for="role in userRole" :key="role.id" :value="role">
@@ -290,7 +293,6 @@ const newUser = reactive({
     wardNo: null as number | null,
   },
 });
-
 const validateUserDetails = () => {
   errors.fullName = newUser.fullName ? "" : "Full name is required";
   errors.email = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(

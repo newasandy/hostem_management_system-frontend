@@ -30,7 +30,7 @@
           <InputText
             v-model="filterModel.value"
             type="text"
-            @input="filterCallback"
+            @keydown.enter="filterCallback"
             placeholder="Search names"
             class="w-full"
           />

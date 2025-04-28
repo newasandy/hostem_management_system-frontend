@@ -33,7 +33,7 @@
           <InputText
             v-model="filterModel.value"
             type="text"
-            @input="filterCallback"
+            @keydown.enter="filterCallback"
             placeholder="Search names"
             class="w-full"
           />
@@ -49,7 +49,7 @@
           <InputText
             v-model="filterModel.value"
             type="text"
-            @input="filterCallback"
+            @keydown.enter="filterCallback"
             placeholder="Search Email"
             class="w-full"
           /> </template
@@ -65,7 +65,7 @@
           <InputText
             v-model="filterModel.value"
             type="text"
-            @input="filterCallback"
+            @keydown.enter="filterCallback"
             placeholder="Search Country"
             class="w-full"
           /> </template
@@ -81,7 +81,7 @@
           <InputText
             v-model="filterModel.value"
             type="text"
-            @input="filterCallback"
+            @keydown.enter="filterCallback"
             placeholder="Search District"
             class="w-full"
           /> </template
@@ -97,7 +97,7 @@
           <InputText
             v-model="filterModel.value"
             type="text"
-            @input="filterCallback"
+            @keydown.enter="filterCallback"
             placeholder="Search Metro"
             class="w-full"
           /> </template
