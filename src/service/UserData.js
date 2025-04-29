@@ -60,11 +60,10 @@ export const getUserDetails = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("User registered", data);
         toast.add({
           severity: "success",
-          summary: "Login Successful",
-          detail: data,
+          summary: "Register Successful",
+          detail: data.message,
           life: 3000,
         });
 
@@ -81,5 +80,54 @@ export const getUserDetails = () => {
     }
   };
 
-  return { users, userRole, totalRecords, userData, getUserRole, registerUser };
+  const updateUser = async (payload) => {
+    try {
+      const response = await fetchAuthentication(
+        "http://localhost:8080/hostel_management_system_web/api/user/updateUser",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+        toast
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        toast.add({
+          severity: "error",
+          summary: "Not Update",
+          detail: data.message,
+          life: 3000,
+        });
+        return;
+      }
+      const data = await response.json();
+      toast.add({
+        severity: "success",
+        summary: "Update Successful",
+        detail: data.message,
+        life: 3000,
+      });
+    } catch (error) {
+      toast.add({
+        severity: "error",
+        summary: "Network Error",
+        detail: "Could not reach server",
+        life: 3000,
+      });
+      return false;
+    }
+  };
+
+  return {
+    users,
+    userRole,
+    totalRecords,
+    userData,
+    getUserRole,
+    registerUser,
+    updateUser,
+  };
 };

@@ -162,7 +162,7 @@
               for="rmcMc"
               class="block text-base font-medium text-gray-700 font-medium"
             >
-              Metro:
+              Municipality:
             </label>
           </div>
           <div class="mb-3">

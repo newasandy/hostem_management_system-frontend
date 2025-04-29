@@ -109,17 +109,26 @@
             <span>
               {{ data.address.wardNo }}
             </span>
-            <TableRowButton
-              icon="pi pi-plus"
-              colorScheme="text-black bg-white"
-              @action="handleBlock(data)"
-            />
-            <TableRowButton
-              icon="pi pi-user-edit"
-              position="right-11"
-              colorScheme="text-black bg-white"
-              @action="handleEdit(data)"
-            />
+            <div v-if="data.status">
+              <TableRowButton
+                icon="pi pi-ban"
+                colorScheme="text-black bg-white"
+                @action="handleBlock(data)"
+              />
+              <TableRowButton
+                icon="pi pi-user-edit"
+                position="right-11"
+                colorScheme="text-black bg-white"
+                @action="handleEdit(data)"
+              />
+            </div>
+            <div v-if="!data.status">
+              <TableRowButton
+                icon="pi pi-check"
+                colorScheme="text-black bg-white"
+                @action="handleUnblock(data)"
+              />
+            </div>
           </div>
         </template>
       </Column>
@@ -139,7 +148,9 @@
       </Column> -->
 
       <template #empty>No records found.</template>
-      <template #loading>Loading…</template>
+      <template #loading
+        ><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i
+      ></template>
     </DataTable>
   </div>
 </template>
@@ -161,8 +172,9 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "update:filters", val: DataTableFilterMeta): void;
   (e: "lazy", event: LazyLoadEvent): void;
-  (e: "edit"): void;
-  (e: "block"): void;
+  (e: "edit", rowData: any): void;
+  (e: "block", rowData: any): void;
+  (e: "unBlock", rowData: any): void;
 }>();
 
 function onLazy(event: LazyLoadEvent) {
@@ -191,10 +203,15 @@ const getRowClass = (data: any) => {
 };
 
 function handleEdit(row: any) {
+  console.log(row);
+
   emit("edit", row);
 }
 
 function handleBlock(row: any) {
   emit("block", row);
+}
+function handleUnblock(row: any) {
+  emit("unBlock", row);
 }
 </script>

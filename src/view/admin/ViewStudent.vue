@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, watch } from "vue";
+import { ref, onMounted, reactive, nextTick } from "vue";
 import { Dialog, Toast } from "primevue";
 import StudentTable from "../../components/tables/StudentTable.vue";
 import { getUserDetails } from "../../service/UserData";
 import MyButton from "../../components/UI/MyButton.vue";
 import Registration from "../../components/from/Registration.vue";
+import UserUpdateForm from "../../components/from/UserUpdateForm.vue";
 
-const { users, totalRecords, userData } = getUserDetails();
-
+const { users, totalRecords, userData, updateUser } = getUserDetails();
+const selectUser = ref<any>(null);
 const showDialog = ref(false);
-
+const updateDialog = ref(false);
 const loading = ref(false);
 const filters = ref({
   fullName: { value: null, matchMode: "contains" },
@@ -65,11 +66,40 @@ const initialLoadEvent = {
   sortOrder: null,
   filters: {},
 };
-
+const updateSuccess = () => {
+  updateDialog.value = false;
+  loadData(initialLoadEvent);
+};
+const updateDialogClose = () => {
+  updateDialog.value = false;
+};
 onMounted(async () => {
   loadData(initialLoadEvent);
   loading.value = false;
 });
+
+const handleUpdate = (row: any) => {
+  updateDialog.value = true;
+  selectUser.value = row;
+};
+const handleBlock = async (row: any) => {
+  const blockUser = reactive({
+    ...row,
+    status: false,
+  });
+  await updateUser(blockUser);
+  await nextTick();
+  loadData(initialLoadEvent);
+};
+const handleUnblock = async (row: any) => {
+  const blockUser = reactive({
+    ...row,
+    status: true,
+  });
+  await updateUser(blockUser);
+  await nextTick();
+  loadData(initialLoadEvent);
+};
 const showDialogToggle = () => {
   showDialog.value = false;
 };
@@ -96,6 +126,19 @@ const showDialogToggle = () => {
       />
     </Dialog>
 
+    <Dialog
+      v-model:visible="updateDialog"
+      modal
+      header="Update Student"
+      class="w-[85vw] md:w-[50vw] rounded-2xl shadow-lg"
+    >
+      <UserUpdateForm
+        :users="selectUser"
+        @success="updateSuccess"
+        @close="updateDialogClose"
+      />
+    </Dialog>
+
     <StudentTable
       v-model:filters="filters"
       :value="users"
@@ -103,6 +146,9 @@ const showDialogToggle = () => {
       :loading="loading"
       :rows="pageSize"
       @lazy="loadData"
+      @edit="handleUpdate"
+      @block="handleBlock"
+      @unBlock="handleUnblock"
     />
     <Toast />
   </div>

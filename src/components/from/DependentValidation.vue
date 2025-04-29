@@ -240,20 +240,7 @@ const resetForm = () => {
 };
 watch(selectRole, (val) => (newUser.role = val));
 
-const handleNext = () => {
-  let isValid = false;
 
-  if (currentStep.value === 1) {
-    isValid = validateUserDetails();
-  } else if (currentStep.value === 2) {
-    isValid = validateAddress();
-  }
-
-  if (isValid) {
-    currentStep.value++;
-    errors.room = ""; // Reset room error when moving to next step
-  }
-};
 async function handleSave() {
   if (!validateUserDetails()) {
     console.log("here");

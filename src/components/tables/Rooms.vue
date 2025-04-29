@@ -60,13 +60,15 @@
       </Column>
 
       <template #empty>No users found.</template>
-      <template #loading>Loading user data. Please wait.</template>
+      <template #loading
+        ><i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i
+      ></template>
     </DataTable>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { DataTable, Column, InputText } from "primevue";
 import { DataTableFilterMeta } from "primevue/datatable";
 import TableRowButton from "../UI/TableRowButton.vue";

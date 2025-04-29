@@ -22,6 +22,13 @@ export const fetchAuthentication = async (url, options = {}, toast) => {
         throw new Error("Session expired");
       }
     }
+    const data = await response.json();
+    toast.add({
+      severity: "error",
+      summary: "Session Expired",
+      detail: data.message,
+      life: 3000,
+    });
   }
 
   return response;

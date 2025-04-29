@@ -11,25 +11,16 @@
     />
   </div>
   <div class="w-xl">
-    <DependentValidation />
-    <!-- <UserUpdateForm /> -->
+    <!-- <DependentValidation /> -->
+    <UserUpdateForm :users="newUser" />
   </div>
   <div class="flex item-center justify-center">
     <Card class="mt-6">
       <template #header>
         <div class="flex justify-center items-center gap-3 p-3">
-          <input
-            v-model="number1"
-            type="number"
-            class="border border-green-700 rounded-lg h-8 p-1"
-            placeholder="Enter number"
-          />
-          <input
-            v-model="number2"
-            type="number"
-            class="border border-green-700 rounded-lg h-8 p-1"
-            placeholder="Enter number"
-          />
+          <InputNumber v-model="number1" placeholder="Enter number" />
+          <InputNumber v-model="number2" placeholder="Enter number" />
+          <InputNumber :model-value="result" placeholder="Enter number" />
         </div>
         <div class="font-bold text-center">
           <span> {{ result }} </span>
@@ -38,6 +29,7 @@
           <MyButton label="Add" color="success" @click="handleAdd" />
           <MyButton label="Multiply" color="contrast" @click="handleMulti" />
           <MyButton label="Divide" color="danger" @click="handleDivide" />
+          <MyButton label="Check" @click="handleCheck" />
         </div>
       </template>
     </Card>
@@ -45,13 +37,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, reactive } from "vue";
+import { InputNumber } from "primevue";
 import AutoComplete from "primevue/autocomplete"; // correct import
 import { getUserDetails } from "../service/UserData";
 import { Card } from "primevue";
 import UserUpdateForm from "../components/from/UserUpdateForm.vue";
 import MyButton from "../components/UI/MyButton.vue";
-import DependentValidation from "../components/from/DependentValidation.vue";
 
 type User = { fullName: string };
 
@@ -59,7 +51,18 @@ const { users, userData } = getUserDetails();
 const loading = ref(false);
 const suggestions = ref<User[]>([]);
 const selectedUser = ref<User | null>(null); // model holds object
-
+const newUser = ref({
+  fullName: "user",
+  email: "user@gmail.com",
+  passwords: "user1234",
+  status: true,
+  address: {
+    country: "nepal",
+    district: "ktm",
+    rmcMc: "ktm",
+    wardNo: 9,
+  },
+});
 async function search(event: { query: string }) {
   loading.value = true;
   try {
@@ -82,8 +85,6 @@ async function search(event: { query: string }) {
     loading.value = false;
   }
 }
-
-
 
 onMounted(async () => {
   search({ query: "" });
@@ -109,5 +110,12 @@ const handleDivide = () => {
     return;
   }
   result.value = parseFloat((number1.value / number2.value).toFixed(2));
+};
+
+const handleCheck = () => {
+  console.log(number1.value);
+  console.log(number2.value);
+
+  console.log(result.value);
 };
 </script>
