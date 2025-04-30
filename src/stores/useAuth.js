@@ -72,40 +72,12 @@ export const useAuthStore = defineStore(
       });
     }
 
-    async function checkAuth() {
-      try {
-        const resp = await fetch(
-          "http://localhost:8080/hostel_management_system_web/api/auth/me",
-          {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        if (resp.ok) {
-          const u = await resp.json();
-          user.value = u;
-          userRole.value = u.role.id === 1 ? "ADMIN" : "USER";
-          isLoggedIn.value = true;
-        } else {
-          isLoggedIn.value = false;
-          userRole.value = "";
-          user.value = null;
-        }
-      } catch {
-        isLoggedIn.value = false;
-        userRole.value = "";
-        user.value = null;
-      }
-    }
-
     return {
       isLoggedIn,
       userRole,
       user,
       loginAction,
       logout,
-      checkAuth,
     };
   },
   {

@@ -3,7 +3,7 @@ import Home from "../view/Home.vue";
 import Login from "../view/Login.vue";
 import ViewStudent from "../view/admin/ViewStudent.vue";
 import MyAutoComplete from "../view/MyAutoComplete.vue";
-import { useAuthStore } from "../service/useAuth";
+import { useAuthStore } from "../stores/useAuth";
 
 const routes = [
   { path: "/", name: "Home", component: Home },

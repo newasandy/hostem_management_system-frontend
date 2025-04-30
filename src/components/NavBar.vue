@@ -11,7 +11,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { useAuthStore } from "../service/useAuth";
+import { useAuthStore } from "../stores/useAuth";
 import Menubar from "primevue/menubar";
 
 const router = useRouter();

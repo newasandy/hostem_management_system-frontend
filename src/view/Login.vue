@@ -44,7 +44,7 @@ import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Toast from "primevue/toast";
-import { useAuthStore } from "../service/useAuth";
+import { useAuthStore } from "../stores/useAuth";
 const email = ref("");
 const password = ref("");
 const router = useRouter();
