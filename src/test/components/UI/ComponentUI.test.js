@@ -1,7 +1,7 @@
 import { mount, config } from "@vue/test-utils";
 import { describe, it, expect, beforeEach } from "vitest";
-import MyButton from "../MyButton.vue";
-import TableRowButton from "../TableRowButton.vue";
+import MyButton from "../../../components/UI/MyButton.vue";
+import TableRowButton from "../../../components/UI/TableRowButton.vue";
 
 // Stub PrimeVue Button globally so we can inspect props/emits without pulling in PrimeVue’s implementation
 config.global.stubs = {
