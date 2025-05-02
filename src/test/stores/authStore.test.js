@@ -1,6 +1,6 @@
 import { setActivePinia, createPinia } from "pinia";
 import { vi, beforeEach, expect, describe, test } from "vitest";
-import { useAuthStore } from "../useAuth";
+import { useAuthStore } from "../../stores/useAuth";
 
 // Mock PrimeVue toast
 const mockToast = { add: vi.fn() };

@@ -11,8 +11,8 @@
     />
   </div>
   <div class="w-xl">
-    <!-- <DependentValidation /> -->
-    <UserUpdateForm :users="newUser" />
+    <DependentValidation />
+    <!-- <UserUpdateForm :users="newUser" /> -->
   </div>
   <div class="flex item-center justify-center">
     <Card class="mt-6">
@@ -43,6 +43,8 @@ import AutoComplete from "primevue/autocomplete"; // correct import
 import { getUserDetails } from "../service/UserData";
 import { Card } from "primevue";
 import UserUpdateForm from "../components/from/UserUpdateForm.vue";
+import DependentValidation from '../components/from/DependentValidation.vue'
+
 import MyButton from "../components/UI/MyButton.vue";
 
 type User = { fullName: string };

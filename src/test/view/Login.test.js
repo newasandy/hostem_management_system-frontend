@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
-import Login from "../Login.vue";
+import { createTestingPinia } from "@pinia/testing";
+import Login from "../../view/Login.vue";
 import PrimeVue from "primevue/config";
-
+import { useAuthStore } from "../../stores/useAuth";
 // PrimeVue component mocks
 vi.mock("primevue/inputtext", () => ({ default: { template: "<input />" } }));
 vi.mock("primevue/button", () => ({ default: { template: "<button />" } }));
@@ -88,48 +89,4 @@ describe("Login.vue", () => {
     expect(emailInput.element.value).toBe("test@example.com");
     expect(passwordInput.element.value).toBe("password123");
   });
-
-  // it("submits login credentials", async () => {
-  // Mock the login action implementation
-  // mockLoginAction.mockImplementationOnce(async ({ email, password }) => {
-  //   return email === "test@example.com" && password === "password123";
-  // });
-
-  // Set input values using component IDs
-  // await wrapper.find("#email1").setValue("test@example.com");
-  // await wrapper.find("#password1").setValue("password123");
-
-  // Submit the form
-  // await wrapper.find("form").trigger("submit.prevent");
-
-  // Wait for all promises to resolve
-  // await new Promise((resolve) => setTimeout(resolve, 0));
-
-  // Verify the store action was called
-  // expect(mockLoginAction).toHaveBeenCalledWith({
-  //   email: "test@example.com",
-  //   passwords: "password123",
-  // });
-  // });
-
-  //   it("redirects to student dashboard for role 1", async () => {
-  //     mockLoginAction.mockResolvedValueOnce(true);
-  //     vi.mocked(useAuthStore).mockImplementationOnce(() => ({
-  //       loginAction: mockLoginAction,
-  //       user: { role: { id: 1 } },
-  //       toast: { add: vi.fn() },
-  //     }));
-
-  //     const wrapper = mount(Login, { global: { plugins: [PrimeVue] } });
-  //     await wrapper.find("form").trigger("submit.prevent");
-
-  //     expect(mockPush).toHaveBeenCalledWith("/student");
-  //   });
-
-  //   it("redirects to home for other roles", async () => {
-  //     await wrapper.find("form").trigger("submit.prevent");
-  //     await new Promise((resolve) => setTimeout(resolve, 0)); // Allow promises to settle
-
-  //     expect(mockPush).toHaveBeenCalledWith("/");
-  //   });
 });

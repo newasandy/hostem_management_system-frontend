@@ -156,6 +156,36 @@
             }}</span>
           </div>
         </div>
+
+        <div>
+          <div class="mb-1">
+            <label
+              for="product"
+              class="block text-base font-medium text-gray-700 font-medium"
+            >
+              Product Name:
+            </label>
+          </div>
+          <div class="mb-3">
+            <input
+              v-if="selectRole?.roles === 'ADMIN'"
+              id="product"
+              v-model.trim="productName"
+              type="text"
+              class="w-full p-3 h-9 border rounded-lg"
+              placeholder="Enter Phone Number"
+            />
+            <input
+              v-else
+              id="product"
+              :value="productName"
+              type="text"
+              class="w-full p-3 h-9 border rounded-lg"
+              :disabled="true"
+              placeholder="Enter Phone Number"
+            />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -190,7 +220,7 @@ const { userRole, getUserRole } = getUserDetails();
 const currentStep = ref(1);
 const errors = reactive({});
 const emit = defineEmits(["success", "dailogToggle"]);
-
+const productName = ref<String>("Nothing");
 const newUser = reactive({
   fullName: "",
   email: "",
@@ -240,7 +270,6 @@ const resetForm = () => {
 };
 watch(selectRole, (val) => (newUser.role = val));
 
-
 async function handleSave() {
   if (!validateUserDetails()) {
     console.log("here");
@@ -251,6 +280,7 @@ async function handleSave() {
   console.log(newUser.passwords);
   console.log(newUser.citizen);
   console.log(newUser.phone);
+  console.log(productName.value);
 }
 
 onMounted(async () => {

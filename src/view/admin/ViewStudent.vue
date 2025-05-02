@@ -6,6 +6,8 @@ import { getUserDetails } from "../../service/UserData";
 import MyButton from "../../components/UI/MyButton.vue";
 import Registration from "../../components/from/Registration.vue";
 import UserUpdateForm from "../../components/from/UserUpdateForm.vue";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const { users, totalRecords, userData, updateUser } = getUserDetails();
 const selectUser = ref<any>(null);
@@ -103,6 +105,37 @@ const handleUnblock = async (row: any) => {
 const showDialogToggle = () => {
   showDialog.value = false;
 };
+const exportPDF = () => {
+  const doc = new jsPDF();
+
+  const columns = [
+    { header: "Name", dataKey: "fullName" },
+    { header: "Email", dataKey: "email" },
+    { header: "Country", dataKey: "country" },
+    { header: "District", dataKey: "district" },
+    { header: "Metro", dataKey: "rmcMc" },
+    { header: "Ward Number", dataKey: "wardNo" },
+  ];
+  const rows = users.value.map((u) => ({
+    fullName: u.fullName,
+    email: u.email,
+    country: u.address?.country,
+    district: u.address?.district,
+    rmcMc: u.address?.rmcMc,
+    wardNo: u.address?.wardNo,
+  }));
+
+  doc.setFontSize(18);
+  doc.text("User Details", 105, 20, { align: "center" });
+  autoTable(doc, {
+    columns: columns,
+    body: rows,
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [22, 160, 133] },
+    margin: { top: 25 },
+  });
+  doc.save("users.pdf");
+};
 </script>
 
 <template>
@@ -112,6 +145,9 @@ const showDialogToggle = () => {
     >
       <div>
         <MyButton label="Add" color="contrast" @click="showDialog = true" />
+      </div>
+      <div>
+        <MyButton label="PDF" color="success" @click="exportPDF" />
       </div>
     </div>
     <Dialog
