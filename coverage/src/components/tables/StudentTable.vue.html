@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">84.02% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>169/169</span>
+                <span class='fraction'>142/169</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">11.11% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">84.02% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>169/169</span>
+                <span class='fraction'>142/169</span>
             </div>
         
             
@@ -459,43 +459,43 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
   &lt;div class="m-4 pt-4 pb-4 rounded-lg bg-white shadow-md"&gt;
@@ -507,7 +507,7 @@
       :totalRecords="totalRecords"
       :loading="loading"
       dataKey="id"
-      v-model:filters="internalFilters"
+      v-model:filters="<span class="fstat-no" title="function not covered" >internalFilters"</span>
       @filter="onFilter"
       @page="onLazy"
       @sort="onLazy"
@@ -676,43 +676,43 @@ const emit = defineEmits&lt;{
   (e: "unBlock", rowData: any): void;
 }&gt;();
 &nbsp;
-function onLazy(event: LazyLoadEvent) {
-  emit("lazy", event);
-}
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >function onLazy(event: LazyLoadEvent) {</span></span>
+<span class="cstat-no" title="statement not covered" >  emit("lazy", event);</span>
+<span class="cstat-no" title="statement not covered" >}</span>
 const internalFilters = computed({
   get: () =&gt; props.filters,
-  set: (val) =&gt; {
+  set: <span class="fstat-no" title="function not covered" >(val) =&gt; {</span>
     // Only update if values actually changed
-    if (JSON.stringify(val) !== JSON.stringify(props.filters)) {
-      emit("update:filters", val);
-    }
-  },
+<span class="cstat-no" title="statement not covered" >    if (JSON.stringify(val) !== JSON.stringify(props.filters)) {</span>
+<span class="cstat-no" title="statement not covered" >      emit("update:filters", val);</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >  },</span>
 });
-function onFilter(event: LazyLoadEvent) {
-  emit("lazy", {
-    ...event,
-    first: 0,
-  });
-}
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >function onFilter(event: LazyLoadEvent) {</span></span>
+<span class="cstat-no" title="statement not covered" >  emit("lazy", {</span>
+<span class="cstat-no" title="statement not covered" >    ...event,</span>
+<span class="cstat-no" title="statement not covered" >    first: 0,</span>
+<span class="cstat-no" title="statement not covered" >  });</span>
+<span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-const getRowClass = (data: any) =&gt; {
-  return data.status
-    ? "!bg-green-100 hover:!bg-green-200 group"
-    : "!bg-red-100 hover:!bg-red-200 group";
-};
+const getRowClass = <span class="fstat-no" title="function not covered" >(data: any) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  return data.status</span>
+<span class="cstat-no" title="statement not covered" >    ? "!bg-green-100 hover:!bg-green-200 group"</span>
+<span class="cstat-no" title="statement not covered" >    : "!bg-red-100 hover:!bg-red-200 group";</span>
+<span class="cstat-no" title="statement not covered" >};</span>
 &nbsp;
-function handleEdit(row: any) {
-  console.log(row);
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >function handleEdit(row: any) {</span></span>
+<span class="cstat-no" title="statement not covered" >  console.log(row);</span>
 &nbsp;
-  emit("edit", row);
-}
+<span class="cstat-no" title="statement not covered" >  emit("edit", row);</span>
+<span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-function handleBlock(row: any) {
-  emit("block", row);
-}
-function handleUnblock(row: any) {
-  emit("unBlock", row);
-}
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >function handleBlock(row: any) {</span></span>
+<span class="cstat-no" title="statement not covered" >  emit("block", row);</span>
+<span class="cstat-no" title="statement not covered" >}</span>
+<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >function handleUnblock(row: any) {</span></span>
+<span class="cstat-no" title="statement not covered" >  emit("unBlock", row);</span>
+<span class="cstat-no" title="statement not covered" >}</span>
 &lt;/script&gt;
 &nbsp;</pre></td></tr></table></pre>
 
@@ -721,7 +721,7 @@ function handleUnblock(row: any) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-02T09:01:35.657Z
+                at 2025-05-05T04:06:15.462Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

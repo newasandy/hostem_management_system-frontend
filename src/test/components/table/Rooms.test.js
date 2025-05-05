@@ -23,6 +23,7 @@ describe("Rooms.vue", () => {
         components: { DataTable, Column, InputText },
       },
       props: {
+        filter:{},
         value: sampleData,
         totalRecords: sampleData.length,
         rows: 5,
