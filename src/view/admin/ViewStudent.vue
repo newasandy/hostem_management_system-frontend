@@ -6,6 +6,8 @@ import { getUserDetails } from "../../service/UserData";
 import MyButton from "../../components/UI/MyButton.vue";
 import Registration from "../../components/from/Registration.vue";
 import UserUpdateForm from "../../components/from/UserUpdateForm.vue";
+import ExportPDFButton from "../../components/UI/ExportPDFButton.vue";
+import { generatePdf } from "../../service/PDFExportService";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -75,10 +77,6 @@ const updateSuccess = () => {
 const updateDialogClose = () => {
   updateDialog.value = false;
 };
-onMounted(async () => {
-  loadData(initialLoadEvent);
-  loading.value = false;
-});
 
 const handleUpdate = (row: any) => {
   updateDialog.value = true;
@@ -136,6 +134,28 @@ const exportPDF = () => {
   });
   doc.save("users.pdf");
 };
+
+const availableColumns = ref([
+  { key: "fullName", label: "Full Name" },
+  { key: "email", label: "Email" },
+  { key: "address.country", label: "Country" },
+  { key: "address.district", label: "District" },
+  { key: "address.rmcMc", label: "RMC/MC" },
+  { key: "address.wardNo", label: "Ward No" },
+]);
+const columnOrder = ref([]);
+const tableName = ref("Users");
+function downloadPdf() {
+  generatePdf(columnOrder.value, users.value, tableName.value);
+}
+
+onMounted(async () => {
+  loadData(initialLoadEvent);
+  loading.value = false;
+  if (columnOrder.value.length === 0) {
+    columnOrder.value = availableColumns.value.map((c) => c.key);
+  }
+});
 </script>
 
 <template>
@@ -147,7 +167,7 @@ const exportPDF = () => {
         <MyButton label="Add" color="contrast" @click="showDialog = true" />
       </div>
       <div>
-        <MyButton label="PDF" color="success" @click="exportPDF" />
+        <MyButton label="PDF" color="success" @click="downloadPdf" />
       </div>
     </div>
     <Dialog
@@ -174,7 +194,12 @@ const exportPDF = () => {
         @close="updateDialogClose"
       />
     </Dialog>
-
+    <ExportPDFButton
+      :availableColumns="availableColumns"
+      v-model:columnOrder="columnOrder"
+      :tableName="tableName"
+      @update:columnOrder="(newValue) => (columnOrder = newValue)"
+    />
     <StudentTable
       v-model:filters="filters"
       :value="users"
