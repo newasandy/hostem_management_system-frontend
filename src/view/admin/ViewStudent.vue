@@ -2,12 +2,12 @@
 import { ref, onMounted, reactive, nextTick } from "vue";
 import { Dialog, Toast } from "primevue";
 import StudentTable from "../../components/tables/StudentTable.vue";
+import { AutoComplete } from "primevue";
 import { getUserDetails } from "../../service/UserData";
 import MyButton from "../../components/UI/MyButton.vue";
 import Registration from "../../components/from/Registration.vue";
 import UserUpdateForm from "../../components/from/UserUpdateForm.vue";
-import ExportPDFButton from "../../components/UI/ExportPDFButton.vue";
-import { generatePdf } from "../../service/PDFExportService";
+import { exportPDFs } from "../../service/PDFExportService";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -145,8 +145,31 @@ const availableColumns = ref([
 ]);
 const columnOrder = ref([]);
 const tableName = ref("Users");
-function downloadPdf() {
-  generatePdf(columnOrder.value, users.value, tableName.value);
+
+const paperSize = ["a0", "a1", "a2", "a3", "a4", "a5", "a6", "atm"];
+const orientation = ["portrait", "landscape"];
+
+const selectedSize = ref("a4");
+const selectedOrientation = ref("portrait");
+const options1 = ref([]);
+const options2 = ref([]);
+
+// Query function for suggestions:
+function onPaperSize(event) {
+  const query = event.query?.toLowerCase() ?? "";
+  options1.value = paperSize.filter((city) =>
+    city.toLowerCase().includes(query)
+  );
+}
+function onOrientation(event) {
+  const query = event.query?.toLowerCase() ?? "";
+  options2.value = orientation.filter((city) =>
+    city.toLowerCase().includes(query)
+  );
+}
+
+async function downloadPdf() {
+  exportPDFs(users.value, selectedSize.value, selectedOrientation.value);
 }
 
 onMounted(async () => {
@@ -166,7 +189,25 @@ onMounted(async () => {
       <div>
         <MyButton label="Add" color="contrast" @click="showDialog = true" />
       </div>
-      <div>
+      <div class="flex gap-2">
+        <AutoComplete
+          id="city"
+          v-model="selectedSize"
+          :suggestions="options1"
+          @complete="onPaperSize"
+          dropdown
+          placeholder="Size"
+          class="w-25 h-9 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+        <!-- <AutoComplete
+          id="city"
+          v-model="selectedOrientation"
+          :suggestions="options2"
+          @complete="onOrientation"
+          dropdown
+          placeholder="Size"
+          class="w-40 h-9 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        /> -->
         <MyButton label="PDF" color="success" @click="downloadPdf" />
       </div>
     </div>
@@ -194,12 +235,7 @@ onMounted(async () => {
         @close="updateDialogClose"
       />
     </Dialog>
-    <ExportPDFButton
-      :availableColumns="availableColumns"
-      v-model:columnOrder="columnOrder"
-      :tableName="tableName"
-      @update:columnOrder="(newValue) => (columnOrder = newValue)"
-    />
+
     <StudentTable
       v-model:filters="filters"
       :value="users"

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pdf>
+  <header>
+    <logo>/image/logo.png</logo>
+    <h1 font-size="14" color="#000000" align="center">Company Report</h1>
+  <div font-size="12" color="#000000" align="left">Confidential</div>
+  <p font-size="8" color="#666666" align="right">Date: {{DATE}}</p>
+  </header>
+  <columns>
+    <column>
+      <header>Name</header>
+      <dataKey>fullName</dataKey>
+    </column>
+    <column>
+      <header>Email</header>
+      <dataKey>email</dataKey>
+    </column>
+    <column>
+      <header>Country</header>
+      <dataKey>address.country</dataKey>
+    </column>
+    <column>
+      <header>District</header>
+      <dataKey>address.district</dataKey>
+    </column>
+    <column>
+      <header>Metro</header>
+      <dataKey>address.rmcMc</dataKey>
+    </column>
+    <column>
+      <header>Ward Number</header>
+      <dataKey>address.wardNo</dataKey>
+    </column>
+  </columns>
+  <footer>
+    <p>Page: {{PAGE_NUM}} of {{TOTAL_PAGES}}</p>
+    <p font-size="10" color="#666666" align="right">{{contact}}</p>
+  </footer>
+</pdf>
