@@ -2,7 +2,7 @@
   <div>
     <!-- <AutoCompleteDemo /> -->
   </div>
-
+  <DataView />
   <AutoComplete
     v-model="selectedUser"
     :suggestions="lazySuggestions"
@@ -33,8 +33,10 @@ import { ref, watch, computed } from "vue";
 import type { VirtualScrollerLazyEvent } from "primevue";
 import AutoComplete from "primevue/autocomplete";
 import Skeleton from "primevue/skeleton";
+
 import AutoCompleteDemo from "./AutoCompleteDemo.vue";
 import { getUserDetails } from "../service/UserData";
+import DataView from "../components/UI/DataView.vue";
 
 type User = { fullName: string };
 

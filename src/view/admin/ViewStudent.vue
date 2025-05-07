@@ -10,10 +10,12 @@ import UserUpdateForm from "../../components/from/UserUpdateForm.vue";
 import { exportPDFs } from "../../service/PDFExportService";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import DataView from "../../components/UI/DataView.vue";
 
 const { users, totalRecords, userData, updateUser } = getUserDetails();
 const selectUser = ref<any>(null);
 const showDialog = ref(false);
+const showDetails = ref(false);
 const updateDialog = ref(false);
 const loading = ref(false);
 const filters = ref({
@@ -77,9 +79,12 @@ const updateSuccess = () => {
 const updateDialogClose = () => {
   updateDialog.value = false;
 };
-
+const backMain = () => {
+  showDetails.value = false;
+};
 const handleUpdate = (row: any) => {
-  updateDialog.value = true;
+  // updateDialog.value = true;
+  showDetails.value = true;
   selectUser.value = row;
 };
 const handleBlock = async (row: any) => {
@@ -236,7 +241,9 @@ onMounted(async () => {
       />
     </Dialog>
 
+    <DataView v-if="showDetails" :users="selectUser" @back="backMain" />
     <StudentTable
+      v-else
       v-model:filters="filters"
       :value="users"
       :total-records="totalRecords"
@@ -247,6 +254,7 @@ onMounted(async () => {
       @block="handleBlock"
       @unBlock="handleUnblock"
     />
+
     <Toast />
   </div>
 </template>
