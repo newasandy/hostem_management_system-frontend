@@ -1,9 +1,11 @@
 <template>
   <div>
-    <!-- <AutoCompleteDemo /> -->
+    <AutoCompleteDemo />
   </div>
-  <DataView />
-  <AutoComplete
+  <div>
+    <DeepSeekV3 />
+  </div>
+  <!-- <AutoComplete
     v-model="selectedUser"
     :suggestions="lazySuggestions"
     @complete="search"
@@ -13,9 +15,9 @@
     :completeOnFocus="true"
     :scrollHeight="'300px'"
     :virtualScrollerOptions="virtualScrollerOptions"
-  >
-    <!-- item template: show skeleton for null, name otherwise -->
-    <template #item="{ item, options }">
+  > -->
+  <!-- item template: show skeleton for null, name otherwise -->
+  <!-- <template #item="{ item, options }">
       <div
         class="p-2"
         :class="{ 'bg-surface-100': options.odd }"
@@ -24,8 +26,8 @@
         <Skeleton v-if="!item" width="80%" height="1rem" />
         <span v-else>{{ item.fullName }}</span>
       </div>
-    </template>
-  </AutoComplete>
+    </template> -->
+  <!-- </AutoComplete> -->
 </template>
 
 <script setup lang="ts">
@@ -36,7 +38,7 @@ import Skeleton from "primevue/skeleton";
 
 import AutoCompleteDemo from "./AutoCompleteDemo.vue";
 import { getUserDetails } from "../service/UserData";
-import DataView from "../components/UI/DataView.vue";
+import DeepSeekV3 from "./DeepSeekV3.vue";
 
 type User = { fullName: string };
 

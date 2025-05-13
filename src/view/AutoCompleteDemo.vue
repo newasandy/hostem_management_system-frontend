@@ -1,142 +1,107 @@
-<!-- <template>
-  <AutoComplete
-    v-model="selectedProduct"
-    field="fullName"
-    dropdown
-    :suggestions="products"
-    @complete="onComplete"
-    :virtualScrollerOptions="virtualScrollerOpts"
-  >
-    <template #item="slot">
-      <div class="p-2">{{ slot.item.fullName }}</div>
-    </template>
-  </AutoComplete>
-</template>
-
-<script setup>
-import { ref } from "vue";
-import AutoComplete from "primevue/autocomplete";
-import { getUserDetails } from "../service/UserData";
-const { users, userData, totalRecords } = getUserDetails();
-
-const products = ref([]); // sparse array of length = totalCount
-const totalCount = ref(0);
-const loading = ref(false);
-const lastQuery = ref("");
-const pageSize = 10; // fixed rows per fetch
-
-// VirtualScroller config for lazy loading
-const virtualScrollerOpts = {
-  lazy: true,
-  itemSize: 36, // height of one row in px :contentReference[oaicite:1]{index=1}
-  showLoader: true,
-  loading: loading.value,
-  delay: 200,
-  onLazyLoad: onLazyLoad,
-};
-
-async function onComplete(event) {
-  lastQuery.value = event.query;
-  await fetchPage(0, pageSize);
-}
-
-function onLazyLoad(e) {
-  fetchPage(e.first, e.rows);
-}
-
-async function fetchPage(first, pageSize) {
-  loading.value = true;
-
-  // build the exact param object your backend wants
-  const params = {
-    first,
-    pageSize,
-    sortField: "fullName",
-    sortOrder: "ASC",
-    filters: { fullName: lastQuery.value },
-    exactFilters: { "roles.userTypes": "USER" },
-    unAllocatedUser: false,
-  };
-
-  await userData(params);
-
-  // initialize sparse array once
-  if (products.value.length !== totalRecords) {
-    totalCount.value = totalRecords;
-    products.value = Array.from({ length: totalRecords });
-  }
-
-  // splice in the returned slice
-  users.value.forEach((itm, idx) => {
-    products.value[first + idx] = itm;
-  });
-
-  loading.value = false;
-}
-</script>
-
-<style>
-.p-autocomplete-panel .p-virtualscroller {
-  max-height: 240px;
-}
-</style> -->
-
 <template>
+  <!-- <VirtualScroller
+    class="border border-surface-200 rounded"
+    :items="items"
+    :itemSize="50"
+    :loading="loading"
+    showLoader
+    lazy
+    :delay="250"
+    @lazy-load="onLazyLoad"
+    style="width: 100%; height: 400px"
+  >
+    <template #item="{ item, options }">
+      <div style="height: 50px">
+        {{ item.fullName }}
+      </div>
+    </template>
+    <template #loader="{ options }">
+      <Skeleton :width="options.even ? '60%' : '40%'" height="1.2rem" />
+    </template>
+  </VirtualScroller> -->
   <AutoComplete
-    v-model="selectedItem"
-    :dropdown="true"
-    option-label="fullName"
-    placeholder="Search Users"
-    :virtual-scroller-options="{
-      itemSize: 38,
+    v-model="selectedUser"
+    :suggestions="items"
+    optionLabel="fullName"
+    dropdown
+    scrollHeight="300px"
+    @complete="onLazyLoad"
+    :virtualScrollerOptions="{
       lazy: true,
-      showLoader: true,
+
+      itemSize: 38,
+      showLoader: loading,
       loading: loading,
       delay: 200,
     }"
-    @complete="loadData"
+    placeholder="Search users..."
   />
 </template>
 
 <script setup>
 import { ref } from "vue";
-import { getUserDetails } from "../service/UserData";
+import VirtualScroller from "primevue/virtualscroller";
 import { AutoComplete } from "primevue";
+import Skeleton from "primevue/skeleton";
+import { getUserDetails } from "../service/UserData";
+import { fetchAuthentication } from "../service/fetchAuthentication";
+const { users, userData, totalRecords } = getUserDetails();
 
-const { users, totalRecords, userData } = getUserDetails();
-const selectedItem = ref(null);
-const loading = ref(false);
-const lastQuery = ref("");
-const pageSize = 10;
+// reactive state
+const selectedUser = ref("");
+const items = ref([]); // placeholder array for all items
+const loading = ref(false); // loading indicator
+let totalCount = 0; // will be set on first load
 
-const loadData = async (event) => {
+// your filter maps (assumed provided elsewhere or empty)
+const filterMap = {};
+
+// handler for the lazy-load event
+const onLazyLoad = async (event) => {
+  // show loader
   loading.value = true;
+  console.log("here");
+
+  // build request body exactly as your backend expects
+  const requestBody = {
+    first: event.first || 0,
+    pageSize: event.rows || 10,
+    sortField: "fullName",
+    sortOrder: "ASC",
+    filters: filterMap,
+    exactFilters: { "roles.userTypes": "USER" },
+    unAllocatedUser: false,
+  };
 
   try {
-    const params = {
-      first: event.first,
-      pageSize: pageSize,
-      sortField: "fullName",
-      sortOrder: "ASC",
-      filters: { fullName: event.query },
-      exactFilters: { "roles.userTypes": "USER" },
-      unAllocatedUser: false,
-    };
+    // call your API
+    const response = await fetch(
+      "http://localhost:8080/hostel_management_system_web/api/user/table",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      users.value = data.user_list;
+      if (items.value.length !== data.count) {
+        totalCount = data.count;
+        items.value = Array.from({ length: totalCount }, () => ({
+          fullName: "",
+          id: null,
+        }));
+      }
+      console.log(data.user_list);
 
-    await userData(params);
-
-    // Correct callback format for PrimeVue virtual scroller
-    event.callback({
-      data: users.value,
-      total: totalRecords.value
-    });
-
-  } catch (error) {
-    console.error("Error loading items:", error);
-    event.callback({
-      data: [],
-      total: 0
-    });
+      items.value.splice(event.first, data.user_list.length, ...data.user_list);
+    }
+  } catch (err) {
+    console.error("Lazy load error", err);
   } finally {
     loading.value = false;
   }

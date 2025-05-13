@@ -128,8 +128,10 @@ export const exportPDFs = async (userData, paperFormat, paperOrientation) => {
 
         fontStyle: "bold",
         halign: "center",
-        fillColor: "#4C5958",
-        textColor: "#ffffff",
+        fillColor: "#ffffff",
+        textColor: "#000000",
+        lineWidth: 0.5,
+        lineColor: "#000000",
       },
       bodyStyles: {
         fontSize: baseFontSize,
@@ -139,7 +141,11 @@ export const exportPDFs = async (userData, paperFormat, paperOrientation) => {
         cellPadding: cellPadding,
         halign: "left",
         valign: "middle",
+        // lineWidth: 0.2,
+        // lineColor: "#000000",
       },
+      tableLineColor: [255, 255, 255],
+      tableLineWidth: 1,
       styles: {
         cellPadding: cellPadding,
         fontSize: 10,

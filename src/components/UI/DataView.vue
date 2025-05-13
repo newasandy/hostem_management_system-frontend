@@ -151,6 +151,7 @@ import { reactive, ref } from "vue";
 import { InputText, InputNumber } from "primevue";
 import MyButton from "../UI/MyButton.vue";
 import { getUserDetails } from "../../service/UserData";
+import TableRowButton from "./TableRowButton.vue";
 
 const { updateUser } = getUserDetails();
 const errors = reactive({});
