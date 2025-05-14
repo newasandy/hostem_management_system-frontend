@@ -9,7 +9,7 @@ export const getUserDetails = () => {
   const toast = useToast();
   const userData = async (payload) => {
     const response = await fetchAuthentication(
-      "http://localhost:8080/hostel_management_system_web/api/user/table",
+      "http://localhost:8080/docker_hms/api/user/table",
       {
         method: "POST",
         credentials: "include",
@@ -29,7 +29,7 @@ export const getUserDetails = () => {
 
   const getUserRole = async () => {
     const response = await fetchAuthentication(
-      "http://localhost:8080/hostel_management_system_web/api/user/userType",
+      "http://localhost:8080/docker_hms/api/user/userType",
       {
         method: "GET",
         credentials: "include",
@@ -48,7 +48,7 @@ export const getUserDetails = () => {
   const registerUser = async (payload) => {
     try {
       const response = await fetchAuthentication(
-        "http://localhost:8080/hostel_management_system_web/api/auth/register",
+        "http://localhost:8080/docker_hms/api/auth/register",
         {
           method: "POST",
           credentials: "include",
@@ -83,7 +83,7 @@ export const getUserDetails = () => {
   const updateUser = async (payload) => {
     try {
       const response = await fetchAuthentication(
-        "http://localhost:8080/hostel_management_system_web/api/user/updateUser",
+        "http://localhost:8080/docker_hms/api/user/updateUser",
         {
           method: "POST",
           credentials: "include",

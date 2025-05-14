@@ -2,7 +2,8 @@
   <div class="m-3 p-2 rounded-lg shadow-lg">
     <form @submit.prevent="deepfreeOpen">
       <div class="flex gap-3">
-        <InputText v-model="requestTxt" />
+        <!-- <InputText v-model="requestTxt" /> -->
+        <Textarea v-model="requestTxt" rows="5" cols="30" />
         <Button type="submit" label="My V3" />
       </div>
     </form>
@@ -14,38 +15,34 @@
 
 <script setup>
 import { ref } from "vue";
-import { InputText, Button } from "primevue";
+import { InputText, Button, Textarea } from "primevue";
 // import { Marked } from "marked"
 import { marked } from "marked";
 
 const myres = ref("");
 const requestTxt = ref("");
-
+const demos = () => {
+  console.log(requestTxt.value);
+};
 const deepv3 = async () => {
-  const response = await fetch(
-    // "https://openrouter.ai/api/v1/chat/completions",
-    "https://api.deepseek.com/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        // Authorization:
-        //   "Bearer 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",
-        Authorization: "Bearer sk-5f4a5dfe4ef44a208c12736482e0cc01",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        // model: "deepseek/deepseek-chat-v3-0324:free",
-        // model: "deepseek/deepseek-chat:free",
-        // model: "deepseek/deepseek-r1:free",
-        model: "deepseek-reasoner",
-        messages: [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: "What is the AI?" },
-        ],
-        stream: false,
-      }),
-    }
-  );
+  const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer **************************************",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      // model: "deepseek/deepseek-chat-v3-0324:free",
+      // model: "deepseek/deepseek-chat:free",
+      // model: "deepseek/deepseek-r1:free",
+      model: "deepseek-reasoner",
+      messages: [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: "What is the AI?" },
+      ],
+      stream: false,
+    }),
+  });
 
   const data = response.json();
   myres.value = data.choices?.[0]?.message?.content || "";
@@ -57,15 +54,26 @@ const deepfreeOpen = async () => {
     {
       method: "POST",
       headers: {
-        Authorization:
-          "Bearer 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",
+        Authorization: "Bearer *********************************************",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: "deepseek/deepseek-chat-v3-0324:free",
+        // model: "openai/gpt-4.1-nano",
         // model: "deepseek/deepseek-chat:free",
         // model: "deepseek/deepseek-r1:free",
         messages: [{ role: "user", content: requestTxt.value }],
+        // messages: [
+        //   {
+        //     role: "user",
+        //     content: [
+        //       {
+        //         type: "text",
+        //         text: requestTxt.value,
+        //       },
+        //     ],
+        //   },
+        // ],
       }),
     }
   );

@@ -13,7 +13,7 @@ export const useAuthStore = defineStore(
     async function loginAction({ email, password }) {
       try {
         const res = await fetch(
-          "http://localhost:8080/hostel_management_system_web/api/auth/login",
+          "http://localhost:8080/docker_hms/api/auth/login",
           {
             method: "POST",
             credentials: "include",
@@ -56,10 +56,10 @@ export const useAuthStore = defineStore(
     }
 
     async function logout() {
-      await fetch(
-        "http://localhost:8080/hostel_management_system_web/api/auth/logout",
-        { method: "POST", credentials: "include" }
-      );
+      await fetch("http://hms-b-container:8080/docker_hms/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
       isLoggedIn.value = false;
       userRole.value = "";
       user.value = null;

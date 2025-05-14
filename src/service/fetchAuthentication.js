@@ -37,7 +37,7 @@ export const fetchAuthentication = async (url, options = {}, toast) => {
 const refreshToken = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8080/hostel_management_system_web/api/auth/refresh",
+      "http://localhost:8080/docker_hms/api/auth/refresh",
       {
         method: "POST",
         credentials: "include",
