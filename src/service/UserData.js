@@ -9,7 +9,7 @@ export const getUserDetails = () => {
   const toast = useToast();
   const userData = async (payload) => {
     const response = await fetchAuthentication(
-      "http://localhost:8080/docker_hms/api/user/table",
+      "http://localhost:8080/hostel_management_system_web/api/user/table",
       {
         method: "POST",
         credentials: "include",

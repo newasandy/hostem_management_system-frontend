@@ -30,6 +30,7 @@ const menuItem = computed(() => {
     return [
       {
         label: "Dashboard",
+        command: () => router.push({ name: "AutoC" }),
       },
       {
         label: "Student",

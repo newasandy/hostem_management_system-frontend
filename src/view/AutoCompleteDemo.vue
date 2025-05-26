@@ -19,6 +19,14 @@
       <Skeleton :width="options.even ? '60%' : '40%'" height="1.2rem" />
     </template>
   </VirtualScroller> -->
+  <!-- :virtualScrollerOptions="{
+      lazy: true,
+
+      itemSize: 38,
+      showLoader: loading,
+      loading: loading,
+      delay: 200,
+    }" -->
   <AutoComplete
     v-model="selectedUser"
     :suggestions="items"
@@ -26,25 +34,14 @@
     dropdown
     scrollHeight="300px"
     @complete="onLazyLoad"
-    :virtualScrollerOptions="{
-      lazy: true,
-
-      itemSize: 38,
-      showLoader: loading,
-      loading: loading,
-      delay: 200,
-    }"
     placeholder="Search users..."
   />
 </template>
 
 <script setup>
 import { ref } from "vue";
-import VirtualScroller from "primevue/virtualscroller";
 import { AutoComplete } from "primevue";
-import Skeleton from "primevue/skeleton";
 import { getUserDetails } from "../service/UserData";
-import { fetchAuthentication } from "../service/fetchAuthentication";
 const { users, userData, totalRecords } = getUserDetails();
 
 // reactive state
@@ -53,14 +50,12 @@ const items = ref([]); // placeholder array for all items
 const loading = ref(false); // loading indicator
 let totalCount = 0; // will be set on first load
 
-// your filter maps (assumed provided elsewhere or empty)
-const filterMap = {};
-
 // handler for the lazy-load event
 const onLazyLoad = async (event) => {
   // show loader
   loading.value = true;
   console.log("here");
+  const filterMap = { fullName: event.filters };
 
   // build request body exactly as your backend expects
   const requestBody = {

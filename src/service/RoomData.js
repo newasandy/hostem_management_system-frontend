@@ -7,7 +7,7 @@ export const roomData = () => {
   const getAvailableRoom = async (payload) => {
     try {
       const response = await fetchAuthentication(
-        "http://localhost:8080/docker_hms/api/rooms/availableRoom",
+        "http://localhost:8080/hostel_management_system_web/api/rooms/availableRoom",
         {
           method: "POST",
           credentials: "include",

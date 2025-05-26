@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, reactive, nextTick } from "vue";
+import { ref, onMounted, reactive, nextTick, computed } from "vue";
 import { Dialog, Toast } from "primevue";
 import StudentTable from "../../components/tables/StudentTable.vue";
 import { AutoComplete } from "primevue";
@@ -173,6 +173,25 @@ function onOrientation(event) {
   );
 }
 
+// defineProps();
+const currentView = computed(() =>
+  showDetails.value ? DataView : StudentTable
+);
+
+// computed props to bind
+const currentProps = computed(() => {
+  if (showDetails.value) {
+    return { users: selectUser.value };
+  }
+  return {
+    filters: filters.value,
+    value: users.value,
+    totalRecords: totalRecords.value,
+    loading: loading.value,
+    rows: pageSize.value,
+  };
+});
+
 async function downloadPdf() {
   exportPDFs(users.value, selectedSize.value, selectedOrientation.value);
 }
@@ -204,15 +223,6 @@ onMounted(async () => {
           placeholder="Size"
           class="w-25 h-9 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
         />
-        <!-- <AutoComplete
-          id="city"
-          v-model="selectedOrientation"
-          :suggestions="options2"
-          @complete="onOrientation"
-          dropdown
-          placeholder="Size"
-          class="w-40 h-9 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        /> -->
         <MyButton label="PDF" color="success" @click="downloadPdf" />
       </div>
     </div>
@@ -241,7 +251,7 @@ onMounted(async () => {
       />
     </Dialog>
 
-    <DataView v-if="showDetails" :users="selectUser" @back="backMain" />
+    <!-- <DataView v-if="showDetails" :users="selectUser" @back="backMain" />
     <StudentTable
       v-else
       v-model:filters="filters"
@@ -253,7 +263,19 @@ onMounted(async () => {
       @edit="handleUpdate"
       @block="handleBlock"
       @unBlock="handleUnblock"
-    />
+    /> -->
+
+    <keep-alive>
+      <component
+        :is="currentView"
+        v-bind="currentProps"
+        @back="backMain"
+        @lazy="loadData"
+        @edit="handleUpdate"
+        @block="handleBlock"
+        @unBlock="handleUnblock"
+      />
+    </keep-alive>
 
     <Toast />
   </div>

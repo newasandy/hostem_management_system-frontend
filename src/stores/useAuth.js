@@ -13,7 +13,7 @@ export const useAuthStore = defineStore(
     async function loginAction({ email, password }) {
       try {
         const res = await fetch(
-          "http://localhost:8080/docker_hms/api/auth/login",
+          "http://localhost:8080/hostel_management_system_web/api/auth/login",
           {
             method: "POST",
             credentials: "include",
