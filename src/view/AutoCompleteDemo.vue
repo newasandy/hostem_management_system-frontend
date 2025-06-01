@@ -1,104 +1,53 @@
 <template>
-  <!-- <VirtualScroller
-    class="border border-surface-200 rounded"
-    :items="items"
-    :itemSize="50"
-    :loading="loading"
-    showLoader
-    lazy
-    :delay="250"
-    @lazy-load="onLazyLoad"
-    style="width: 100%; height: 400px"
-  >
-    <template #item="{ item, options }">
-      <div style="height: 50px">
-        {{ item.fullName }}
-      </div>
-    </template>
-    <template #loader="{ options }">
-      <Skeleton :width="options.even ? '60%' : '40%'" height="1.2rem" />
-    </template>
-  </VirtualScroller> -->
-  <!-- :virtualScrollerOptions="{
-      lazy: true,
-
-      itemSize: 38,
-      showLoader: loading,
-      loading: loading,
-      delay: 200,
-    }" -->
-  <AutoComplete
-    v-model="selectedUser"
-    :suggestions="items"
-    optionLabel="fullName"
-    dropdown
-    scrollHeight="300px"
-    @complete="onLazyLoad"
-    placeholder="Search users..."
-  />
+  <div class="card flex justify-center">
+    <AutoComplete
+      v-model="selectedUser"
+      :suggestions="suggestions"
+      @complete="search"
+      optionLabel="fullName"
+      placeholder="Search users"
+      :loading="loading"
+      :completeOnFocus="true"
+    />
+  </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
-import { AutoComplete } from "primevue";
+<script setup lang="ts">
+import { ref, onMounted, reactive } from "vue";
+import AutoComplete from "primevue/autocomplete"; // correct import
 import { getUserDetails } from "../service/UserData";
-const { users, userData, totalRecords } = getUserDetails();
 
-// reactive state
-const selectedUser = ref("");
-const items = ref([]); // placeholder array for all items
-const loading = ref(false); // loading indicator
-let totalCount = 0; // will be set on first load
+type User = { fullName: string };
 
-// handler for the lazy-load event
-const onLazyLoad = async (event) => {
-  // show loader
+const { users, userData } = getUserDetails();
+const loading = ref(false);
+const suggestions = ref<User[]>([]);
+const selectedUser = ref<User | null>(null); // model holds object
+
+async function search(event: { query: string }) {
   loading.value = true;
-  console.log("here");
-  const filterMap = { fullName: event.filters };
-
-  // build request body exactly as your backend expects
-  const requestBody = {
-    first: event.first || 0,
-    pageSize: event.rows || 10,
-    sortField: "fullName",
-    sortOrder: "ASC",
-    filters: filterMap,
-    exactFilters: { "roles.userTypes": "USER" },
-    unAllocatedUser: false,
-  };
-
   try {
-    // call your API
-    const response = await fetch(
-      "http://localhost:8080/hostel_management_system_web/api/user/table",
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      users.value = data.user_list;
-      if (items.value.length !== data.count) {
-        totalCount = data.count;
-        items.value = Array.from({ length: totalCount }, () => ({
-          fullName: "",
-          id: null,
-        }));
-      }
-      console.log(data.user_list);
+    const requestBody = {
+      first: 0,
+      pageSize: 5,
+      sortField: "fullName",
+      sortOrder: "ASC",
+      filters: { fullName: event.query },
+      exactFilters: { "roles.userTypes": "USER" },
+      unAllocatedUser: false,
+    };
 
-      items.value.splice(event.first, data.user_list.length, ...data.user_list);
-    }
-  } catch (err) {
-    console.error("Lazy load error", err);
+    await userData(requestBody); // fills users.value
+    suggestions.value = users.value; // array of { fullName }
+  } catch (error) {
+    console.error("Error loading users:", error);
+    suggestions.value = [];
   } finally {
     loading.value = false;
   }
-};
+}
+
+onMounted(async () => {
+  search({ query: "" });
+});
 </script>
